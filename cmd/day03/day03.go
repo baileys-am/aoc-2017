@@ -5,6 +5,43 @@ import (
 	"math"
 )
 
+type Coordinate struct {
+	X int
+	Y int
+}
+
+func (c *Coordinate) northwest() Coordinate {
+	return Coordinate{c.X - 1, c.Y + 1}
+}
+
+func (c *Coordinate) north() Coordinate {
+	return Coordinate{c.X, c.Y + 1}
+}
+
+func (c *Coordinate) northeast() Coordinate {
+	return Coordinate{c.X + 1, c.Y + 1}
+}
+
+func (c *Coordinate) east() Coordinate {
+	return Coordinate{c.X + 1, c.Y}
+}
+
+func (c *Coordinate) southeast() Coordinate {
+	return Coordinate{c.X + 1, c.Y - 1}
+}
+
+func (c *Coordinate) south() Coordinate {
+	return Coordinate{c.X, c.Y - 1}
+}
+
+func (c *Coordinate) southwest() Coordinate {
+	return Coordinate{c.X - 1, c.Y - 1}
+}
+
+func (c *Coordinate) west() Coordinate {
+	return Coordinate{c.X - 1, c.Y}
+}
+
 func GetGridDim(value int) int {
 	dim := int(math.Ceil(math.Sqrt(float64(value))))
 	if dim%2 == 0 {
@@ -73,7 +110,88 @@ func GetGridManhattanDistance(value int) int {
 	return int(math.Abs(float64(x)) + math.Abs(float64(y)))
 }
 
+func GetSpiralSumValue(value int) int {
+	// Initialize sum values (tracks matrix coord values)
+	sumValues := make(map[Coordinate]int)
+	sumValues[Coordinate{0, 0}] = 1
+
+	// Populate values up to given value
+	for i := 2; i <= value; i++ {
+		// Get coordinate for value and initialize sum
+		x, y := GetGridXY(i)
+		coord := Coordinate{x, y}
+		sumValue := 0
+
+		// Add north west value
+		nwVal, ok := sumValues[coord.northwest()]
+		if ok {
+			sumValue += nwVal
+		}
+
+		// Add north value
+		nVal, ok := sumValues[coord.north()]
+		if ok {
+			sumValue += nVal
+		}
+
+		// Add north east value
+		neVal, ok := sumValues[coord.northeast()]
+		if ok {
+			sumValue += neVal
+		}
+
+		// Add east value
+		eVal, ok := sumValues[coord.east()]
+		if ok {
+			sumValue += eVal
+		}
+
+		// Add south east value
+		seVal, ok := sumValues[coord.southeast()]
+		if ok {
+			sumValue += seVal
+		}
+
+		// Add south value
+		sVal, ok := sumValues[coord.south()]
+		if ok {
+			sumValue += sVal
+		}
+
+		// Add south west value
+		swVal, ok := sumValues[coord.southwest()]
+		if ok {
+			sumValue += swVal
+		}
+
+		// Add west value
+		wVal, ok := sumValues[coord.west()]
+		if ok {
+			sumValue += wVal
+		}
+
+		sumValues[coord] = sumValue
+	}
+
+	// Get and return sum value with coord for given value
+	x, y := GetGridXY(value)
+	coord := Coordinate{x, y}
+	return sumValues[coord]
+}
+
 func main() {
-	dist := GetGridManhattanDistance(312051)
-	fmt.Printf("Part 1: Distance is %d", dist)
+	input := 312051
+
+	// Part 1
+	dist := GetGridManhattanDistance(input)
+	fmt.Printf("Part 1: Distance is %d\r\n", dist)
+
+	// Part 2
+	for i := 1; true; i++ {
+		sumValue := GetSpiralSumValue(i)
+		if sumValue > input {
+			fmt.Printf("Part 2: Larger value is %d", sumValue)
+			break
+		}
+	}
 }

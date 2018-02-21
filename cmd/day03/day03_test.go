@@ -127,3 +127,26 @@ func TestManhattanDistance(t *testing.T) {
 		}
 	}
 }
+
+func TestSpiralSum(t *testing.T) {
+	tests := []struct {
+		in  int
+		out int
+	}{
+		{1, 1},
+		{2, 1},
+		{3, 2},
+		{4, 4},
+		{5, 5},
+		{6, 10},
+		{17, 147},
+	}
+
+	for _, tt := range tests {
+		actual := GetSpiralSumValue(tt.in)
+
+		if tt.out != actual {
+			t.Errorf("failed to calculate spiral sum value. Actual: %d", actual)
+		}
+	}
+}
